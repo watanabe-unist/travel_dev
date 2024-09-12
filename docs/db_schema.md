@@ -5,24 +5,22 @@
 ```mermaid
 ---
 title: "コース管理"
+config:
+    theme: base
 ---
+%%{init: {'maxWidth': 1000, 'maxHeight': 800}}%%
 erDiagram
-    "M_種別" ||--o{ "M_スポット" : ""
-    "M_運航会社" ||--o{ "M_ルート" : ""
-    "M_移動手段" ||--o{ "M_ルート" : ""
-    "M_特集" ||--o{ "T_特集" : ""
-    "M_コース" ||--o{ "T_特集" : ""
-    "M_コース" ||--o{ "M_コース日予定" : ""
-    "M_コース日予定" ||--o{ "T_コース日予定" : ""
-    "M_コース" ||--o{ "T_お気に入り" : ""
-    "M_ユーザー" ||--o{ "T_お気に入り" : ""
-
+    "M_特集" ||--o{ "T_特集" : "特集ID"
     "M_特集"{
         int feature_id PK "特集ID"
         varchar feature_name "特集名"
         varchar feature_detail "詳細"
     }
 
+    "M_コース" ||--o{ "T_特集" : "コースID"
+    "M_コース" ||--o{ "M_コース日予定" : "コースID"
+    "M_コース" ||--o{ "T_お気に入り" : "コースID"
+    "M_コース" ||--o{ "T_コース予約" : "コースID"
     "M_コース"{
         int course_id PK "コースID"
         varchar course_name "コース名"
@@ -30,23 +28,28 @@ erDiagram
         varchar course_detail "コース詳細"
     }
 
+    "M_コース日予定" ||--o{ "T_コース日予定" : "コース日予定ID"
+    "M_コース日予定" ||--o{ "T_宿泊予約" : "コース日予定ID"
     "M_コース日予定"{
         int date_sched_id PK "コース日予定ID"
         int course_id FK "コースID"
         int date "日数"
     }
 
+    "M_種別" ||--o{ "M_スポット" : "種別ID"
     "M_種別"{
-        int type_id PK "タイプID"
-        varchar type_name "タイプ名"
+        int type_id PK "種別ID"
+        varchar type_name "種別名"
         varchar icon "アイコン" 
     }
 
+    "M_移動手段" ||--o{ "M_ルート" : "移動手段ID"
     "M_移動手段"{
         int mode_transport_id PK "移動手段ID"
         varchar detail "移動手段"
     }
 
+    "M_運航会社" ||--o{ "M_ルート" : "運航会社ID"
     "M_運航会社"{
         int operating_company_id PK "運航会社ID"
         varchar name "運航会社名"
@@ -58,6 +61,10 @@ erDiagram
         varchar option_name "オプション名"
     }
 
+    "M_スポット" ||--o| "M_宿泊施設" : "スポットID"
+    "M_スポット" ||--o{ "T_スポット-宿泊" : "スポットID"
+    "M_スポット" ||--o{ "T_立ち寄りスポット" : "スポットID"
+    "M_スポット" ||--o{ "T_オプション" : "スポットID"
     %% 立ち寄りスポットもマスタデータはここに登録
     "M_スポット"{
         int spot_id PK "スポットID"
@@ -80,14 +87,16 @@ erDiagram
         varchar note "備考"
     }
 
-    "M_ユーザー" ||--o{ "T_注文" : ""
-    "T_注文" ||--o{ "T_注文詳細" : ""
-
+    "M_ユーザー" ||--o{ "T_注文" : "ユーザーID"
+    "M_ユーザー" ||--o{ "T_お気に入り" : "ユーザーID"
+    "M_ユーザー" ||--o{ "T_コース予約" : "ユーザーID"
+    "M_ユーザー" ||--o{ "T_注文" : "ユーザーID"
     "M_ユーザー"{
         int user_id PK "ユーザーID"
         varchar user_name "ユーザー名"
     }
 
+    "T_注文" ||--o{ "T_注文詳細" : "注文ID"
     "T_注文"{
         int order_id PK "注文ID"
         timestamp date "注文日"
@@ -119,42 +128,27 @@ erDiagram
         int course_id FK "コースID"
     }
 
-    "M_宿泊施設" ||--o{ "T_スポット-宿泊" : ""
-    "M_宿泊施設" ||--o{ "M_宿泊部屋" : ""
-    "M_スポット" ||--o{ "T_スポット-宿泊" : ""
-    "M_スポット" ||--o{ "T_立ち寄りスポット" : ""
-    "M_ユーザー" ||--o{ "T_コース予約" : ""
-    "M_コース" ||--o{ "T_コース予約" : ""
-    "M_コース日予定" ||--o{ "T_宿泊予約" : ""
-    "M_宿泊施設" ||--o{ "T_宿泊予約" : ""
-    "T_宿泊予約" ||--o{ "T_宿泊予約部屋" : ""
-    "M_宿泊部屋" ||--o{ "T_宿泊予約部屋" : ""
-    "M_宿泊施設" ||--o{ "M_宿泊プラン" : ""
-    "M_宿泊施設" ||--o{ "M_宿泊オプション" : ""
-    "M_宿泊施設" ||--o{ "M_食事" : ""
-    "M_宿泊設備" ||--o{ "T_宿泊設備" : ""
-    "M_宿泊施設" ||--o{ "T_宿泊設備" : ""
-    "M_宿泊部屋" ||--o{ "T_宿泊部屋設備" : ""
-    "M_宿泊部屋設備" ||--o{ "T_宿泊部屋設備" : ""
-    "M_宿泊プラン" ||--o{ "T_宿泊プラン-部屋" : ""
-    "M_宿泊部屋" ||--o{ "T_宿泊プラン-部屋" : ""
-    "M_宿泊プラン" ||--o{ "T_宿泊プラン-食事" : ""
-    "M_食事" ||--o{ "T_宿泊プラン-食事" : ""
-    "T_コース予約" ||--o{ "T_宿泊予約" : ""
-
+    "M_宿泊設備" ||--o{ "T_宿泊設備" : "設備ID"
     "M_宿泊設備"{
         int facility_id PK "設備ID"
         varchar desc "設備内容"
     }
 
+    "M_宿泊部屋設備" ||--o{ "T_宿泊部屋設備" : "部屋設備ID"
     "M_宿泊部屋設備"{
-        int room_facility_id PK "宿泊設備ID"
+        int room_facility_id PK "部屋設備ID"
         varchar item "設備内容"
     }
 
+    "M_宿泊施設" ||--o{ "T_スポット-宿泊" : "宿泊施設ID"
+    "M_宿泊施設" ||--o{ "M_宿泊部屋" : "宿泊施設ID"
+    "M_宿泊施設" ||--o{ "T_宿泊予約" : "宿泊施設ID"
+    "M_宿泊施設" ||--o{ "M_宿泊プラン" : "宿泊施設ID"
+    "M_宿泊施設" ||--o{ "M_宿泊オプション" : "宿泊施設ID"
+    "M_宿泊施設" ||--o{ "M_食事" : "宿泊施設ID"
+    "M_宿泊施設" ||--o{ "T_宿泊設備" : "宿泊施設ID"
+    "M_宿泊施設" ||--o{ "T_画像-宿泊施設" : "宿泊施設ID"
     %% 宿泊施設はスポットとしても登録されている
-    "M_スポット" ||--o| "M_宿泊施設" : ""
-    
     "M_宿泊施設"{
         int hotel_id PK "宿泊施設ID"
         varchar hotel_name "宿泊施設名"
@@ -163,12 +157,19 @@ erDiagram
         int spot_id FK "スポットID"
     }
 
+    "M_宿泊部屋" ||--o{ "T_宿泊予約部屋" : "宿泊部屋ID"
+    "M_宿泊部屋" ||--o{ "T_宿泊部屋設備" : "宿泊部屋ID"
+    "M_宿泊部屋" ||--o{ "T_宿泊プラン-部屋" : "宿泊部屋ID"
+    "M_宿泊部屋" ||--o{ "T_画像-宿泊部屋" : "宿泊部屋ID"
     "M_宿泊部屋"{
         int hotel_room_id PK "宿泊部屋ID"
         varchar desc "内容"
         int hotel_id FK "宿泊施設ID"
     }
 
+    "M_宿泊プラン" ||--o{ "T_宿泊プラン-部屋" : "宿泊プランID"
+    "M_宿泊プラン" ||--o{ "T_宿泊プラン-食事" : "宿泊プランID"
+    "M_宿泊プラン" ||--o{ "T_画像-宿泊プラン" : "宿泊プランID"
     "M_宿泊プラン"{
         int plan_id PK "宿泊プランID"
         varchar desc "詳細"
@@ -176,6 +177,7 @@ erDiagram
         int hotel_id FK "宿泊施設ID"
     }
 
+    "M_食事" ||--o{ "T_宿泊プラン-食事" : "食事ID"
     "M_食事"{
         int meal_id PK "食事ID"
         varchar desc "食事内容"
@@ -201,13 +203,13 @@ erDiagram
         int option_spot_id FK "立ち寄りスポットID"
     }
 
-    "M_スポット" ||--o{ "T_オプション" : "スポットID"
     "M_オプション" ||--o{ "T_オプション" : "オプションID"
     "T_オプション"{
         int spot_id FK "スポットID"
         int option_id "オプションID"
     }
 
+    "T_コース予約" ||--o{ "T_宿泊予約" : "コース予約番号"
     "T_コース予約"{
         int course_reservation_id PK "コース予約番号"
         int user_id FK "ユーザーID"
@@ -215,6 +217,7 @@ erDiagram
         timestamp start_date "コース開始日"
     }
 
+    "T_宿泊予約" ||--o{ "T_宿泊予約部屋" : "ホテル予約番号"
     "T_宿泊予約"{
         int hotel_resevation_id PK "ホテル予約番号"
         int date_sched_id FK "コース日予定ID"
@@ -231,9 +234,7 @@ erDiagram
 
     %%在庫はどうもつか
 
-    "M_ユーザー" ||--o{ "T_注文" : ""
-    "T_注文" ||--o{ "T_注文詳細" : ""
-
+    "T_注文" ||--o{ "T_注文詳細" : "注文ID"
     "T_注文"{
         int order_id PK "注文ID"
         timestamp date "注文日"
@@ -266,13 +267,9 @@ erDiagram
         int meal_id FK "食事ID"
     }
 
-    "M_画像" ||--o{ "T_画像-宿泊施設" : ""
-    "M_宿泊施設" ||--o{ "T_画像-宿泊施設" : ""
-    "M_画像" ||--o{ "T_画像-宿泊部屋" : ""
-    "M_宿泊部屋" ||--o{ "T_画像-宿泊部屋" : ""
-    "M_画像" ||--o{ "T_画像-宿泊プラン" : ""
-    "M_宿泊プラン" ||--o{ "T_画像-宿泊プラン" : ""
-
+    "M_画像" ||--o{ "T_画像-宿泊施設" : "画像ID"
+    "M_画像" ||--o{ "T_画像-宿泊部屋" : "画像ID"
+    "M_画像" ||--o{ "T_画像-宿泊プラン" : "画像ID"
     "M_画像"{
         int image_id PK "画像ID"
         varchar file_name "画像ファイル名"
